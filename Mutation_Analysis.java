@@ -14,28 +14,27 @@ import org.jfree.data.xy.XYSeriesCollection;
 public class Mutation_Analysis {
 
 	public static void main(String[] args){
-		int programRuns = 100; //how many times to run analysis
+		int programRuns = 1000; //how many times to run analysis
 		int[] numOfMutations = new int[programRuns]; //array that will hold # of mutations in the last gen
 		
 		for(int i=0; i<programRuns; i++){ //for loop to run gen array creation 
-			numOfMutations[i] = createArrays(); //createArrays returns number of last gen mutations
+			numOfMutations[i] = createArrays(); //createArrays returns number of total mutations
 		}
 	
 		sort(numOfMutations);
 		for(int i=0; i <numOfMutations.length; i++){
 			System.out.print(numOfMutations[i] + " ");
 		}
-		//graph(numOfMutations); //graph frequency of mutations
-		getFreq(numOfMutations);
+		//getFreq(numOfMutations);
 		
 	}
 	
-	public static void initialize(int[] arr){
+	public static void mutate(int[] arr){
 		Random rand = new Random();
 		for(int i=0; i<arr.length; i++){ //for loop to go see if mutation will occur 
 			int thing = 0; // no mutation
 			if(arr[i]==1) continue; //if there was a previous mutation in slot, continue to next element
-			else if(rand.nextDouble() <= .01){ //see if element falls into probability of mutation
+			else if(rand.nextDouble() <= .004){ //see if element falls into probability of mutation
 				thing = 1; //mutation occurred 
 			}
 			arr[i] = thing; //set element equal to mutation/ non-mutation
@@ -43,40 +42,53 @@ public class Mutation_Analysis {
 	}
 	
 	public static int createArrays(){ //create generation array function: this creates 10 generation plus the initial generation
+		int totalMut = 0;
+		
 		int[] gen0 = new int[(int) Math.pow(2,0)]; //size of array is based on exponential growth by generation number
-			initialize(gen0); //function to mutate
+			mutate(gen0); //function to mutate
+			totalMut = totalMut + totalMutations(gen0);
 		int[] gen1 = new int[(int) Math.pow(2,1)];
 			checkMutations(gen0, gen1); //checks for previous generation mutations
-			initialize(gen1);
+			mutate(gen1);
+			totalMut = totalMut + totalMutations(gen1);
 		int[] gen2 = new int[(int) Math.pow(2,2)];
 			checkMutations(gen1, gen2);
-			initialize(gen2);
+			mutate(gen2);
+			totalMut = totalMut + totalMutations(gen2);
 		int[] gen3 = new int[(int) Math.pow(2,3)];
 			checkMutations(gen2, gen3);
-			initialize(gen3);
+			mutate(gen3);
+			totalMut = totalMut + totalMutations(gen3);
 		int[] gen4 = new int[(int) Math.pow(2,4)];
 			checkMutations(gen3, gen4);
-			initialize(gen4);
+			mutate(gen4);
+			totalMut = totalMut + totalMutations(gen4);
 		int[] gen5 = new int[(int) Math.pow(2,5)];
 			checkMutations(gen4, gen5);
-			initialize(gen5);
+			mutate(gen5);
+			totalMut = totalMut + totalMutations(gen5);
 		int[] gen6 = new int[(int) Math.pow(2,6)];
 			checkMutations(gen5, gen6);
-			initialize(gen6);
+			mutate(gen6);
+			totalMut = totalMut + totalMutations(gen6);
 		int[] gen7 = new int[(int) Math.pow(2,7)];
 			checkMutations(gen6, gen7);
-			initialize(gen7);
+			mutate(gen7);
+			totalMut = totalMut + totalMutations(gen7);
 		int[] gen8 = new int[(int) Math.pow(2,8)];
 			checkMutations(gen7, gen8);
-			initialize(gen8);
+			mutate(gen8);
+			totalMut = totalMut + totalMutations(gen8);
 		int[] gen9 = new int[(int) Math.pow(2,9)];
 			checkMutations(gen8, gen9);
-			initialize(gen9);
+			mutate(gen9);
+			totalMut = totalMut + totalMutations(gen9);
 		int[] gen10 = new int[(int) Math.pow(2,10)];
 			checkMutations(gen9, gen10);
-			initialize(gen10);
+			mutate(gen10);
+			totalMut = totalMut + totalMutations(gen10);
 			
-			return totalMutations(gen10);
+			return totalMut;
 	
 	}
 	
@@ -99,64 +111,18 @@ public class Mutation_Analysis {
 		
 	}
 	
-	public static int totalMutations(int[] gen10){
+	public static int totalMutations(int[] gen){
 		//function totals the number of mutations that occurred in the final generation 
 		int total = 0;
-		for (int i=0; i<gen10.length; i++){
-			if(gen10[i]==1){
+		for (int i=0; i<gen.length; i++){
+			if(gen[i]==1){
 				total++;
 			}
 		}
 		return total;
 	}
 	
-	public static void graph(int[] data) {
-		 // Create a simple XY chart
-		 XYSeries series = new XYSeries("Random");
-		 
-		 int freq = 1;
-		 for(int i=0; i<data.length-1; i++){
-			 if(i==data.length-1){
-				 series.add(data[i], freq);
-				 System.out.println(data[i]);
-				 System.out.println("z");
-			 }
-			 
-			 if(data[i]==data[i+1]){ freq++;
-			 System.out.println(data[i]);
-			 System.out.println("x");
-			 }
-			 	else{
-			 		series.add(data[i], freq);
-			 		freq=1;
-			 		System.out.println(data[i]);
-			 		System.out.println("y");
-			 	}
-			 
-			 
-		 }
-	
-		 // Add the series to your data set
-		 XYSeriesCollection dataset = new XYSeriesCollection();
-		 dataset.addSeries(series);
-		 // Generate the graph
-		 JFreeChart chart = ChartFactory.createXYLineChart(
-		 "Mutation Analysis", // Title
-		 "Frequency of Mutations", // x-axis Label
-		 "# of Mutations", // y-axis Label
-		 dataset, // Dataset
-		 PlotOrientation.VERTICAL, // Plot Orientation
-		 true, // Show Legend
-		 true, // Use tooltips
-		 false // Configure chart to generate URLs?
-		 );
-		 try {
-			 ChartUtilities.saveChartAsJPEG(new File("C:\\chart.jpg"), chart, 500, 300);
-		 } catch (IOException e) {
-			 System.err.println("Problem occurred creating chart.");
-		 }
-	}
-	
+
 	public static void sort(int[] arr){
 		int temp;
 		for(int i=0; i<arr.length; i++){
@@ -198,13 +164,6 @@ public class Mutation_Analysis {
 				System.out.print(tempX[i]);
 				System.out.println();
 			}
-			
-			
-			
-			
-			
-			//return freq;
-			
 	}
 	
 }
