@@ -1,4 +1,14 @@
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Random;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
 
 public class Mutation_Analysis {
@@ -9,8 +19,14 @@ public class Mutation_Analysis {
 		
 		for(int i=0; i<programRuns; i++){ //for loop to run gen array creation 
 			numOfMutations[i] = createArrays(); //createArrays returns number of last gen mutations
-			System.out.println(numOfMutations[i]);
 		}
+	
+		sort(numOfMutations);
+		for(int i=0; i <numOfMutations.length; i++){
+			System.out.print(numOfMutations[i] + " ");
+		}
+		//graph(numOfMutations); //graph frequency of mutations
+		getFreq(numOfMutations);
 		
 	}
 	
@@ -20,14 +36,10 @@ public class Mutation_Analysis {
 			int thing = 0; // no mutation
 			if(arr[i]==1) continue; //if there was a previous mutation in slot, continue to next element
 			else if(rand.nextDouble() <= .01){ //see if element falls into probability of mutation
-				thing = 1; //mutation occured 
+				thing = 1; //mutation occurred 
 			}
 			arr[i] = thing; //set element equal to mutation/ non-mutation
 		}
-//		for(int i=0; i<arr.length; i++){
-//			System.out.print(arr[i]);
-//		}
-//		System.out.println();
 	}
 	
 	public static int createArrays(){ //create generation array function: this creates 10 generation plus the initial generation
@@ -96,6 +108,103 @@ public class Mutation_Analysis {
 			}
 		}
 		return total;
+	}
+	
+	public static void graph(int[] data) {
+		 // Create a simple XY chart
+		 XYSeries series = new XYSeries("Random");
+		 
+		 int freq = 1;
+		 for(int i=0; i<data.length-1; i++){
+			 if(i==data.length-1){
+				 series.add(data[i], freq);
+				 System.out.println(data[i]);
+				 System.out.println("z");
+			 }
+			 
+			 if(data[i]==data[i+1]){ freq++;
+			 System.out.println(data[i]);
+			 System.out.println("x");
+			 }
+			 	else{
+			 		series.add(data[i], freq);
+			 		freq=1;
+			 		System.out.println(data[i]);
+			 		System.out.println("y");
+			 	}
+			 
+			 
+		 }
+	
+		 // Add the series to your data set
+		 XYSeriesCollection dataset = new XYSeriesCollection();
+		 dataset.addSeries(series);
+		 // Generate the graph
+		 JFreeChart chart = ChartFactory.createXYLineChart(
+		 "Mutation Analysis", // Title
+		 "Frequency of Mutations", // x-axis Label
+		 "# of Mutations", // y-axis Label
+		 dataset, // Dataset
+		 PlotOrientation.VERTICAL, // Plot Orientation
+		 true, // Show Legend
+		 true, // Use tooltips
+		 false // Configure chart to generate URLs?
+		 );
+		 try {
+			 ChartUtilities.saveChartAsJPEG(new File("C:\\chart.jpg"), chart, 500, 300);
+		 } catch (IOException e) {
+			 System.err.println("Problem occurred creating chart.");
+		 }
+	}
+	
+	public static void sort(int[] arr){
+		int temp;
+		for(int i=0; i<arr.length; i++){
+			for(int j=1; j<arr.length-i; j++)
+			if(arr[j-1] > arr[j]){
+				temp = arr[j-1];
+				arr[j-1] = arr[j];
+				arr[j] = temp;
+			}
+			
+		}
+	}
+		
+		public static void getFreq(int[] array){
+			int tempYcounter=0;
+			int[] tempX= new int[array.length];
+			int[] tempY= new int[array.length];
+			
+			for(int i=0; i<array.length-1; i++){
+				
+				if(array[i]==array[i+1]){
+					tempX[tempYcounter]+=1;
+				}
+				
+				if(array[i]!=array[i+1])
+				{
+					tempY[tempYcounter++]=array[i];
+				}
+				
+				if((i+1)==array.length-1){
+					tempY[tempYcounter]=array[i+1];
+					break;
+				}
+			}
+			System.out.println();
+			for (int i=0; i<=tempYcounter;i++){
+				tempX[i]+=1;
+				System.out.print(tempY[i]+" : ");
+				System.out.print(tempX[i]);
+				System.out.println();
+			}
+			
+			
+			
+			
+			
+			//return freq;
+			
 	}
 	
 }
