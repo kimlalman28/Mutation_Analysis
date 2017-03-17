@@ -1,31 +1,24 @@
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.Random;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
-
 
 public class Mutation_Analysis {
 
+	public static int programRuns = 1000; //how many times to run through the analysis
+	public static int[] numOfMutations = new int[programRuns]; //numOfMutations that will hold # of total mutations
+	public static int[] tempX= new int[numOfMutations.length]; //array that holds frequency of the # of mutations
+	public static int[] tempY= new int[numOfMutations.length]; //array that holds different numbers of mutations that occur every time program is executed
+	
+	
 	public static void main(String[] args){
-		int programRuns = 1000; //how many times to run analysis
-		int[] numOfMutations = new int[programRuns]; //array that will hold # of mutations in the last gen
-		
-		for(int i=0; i<programRuns; i++){ //for loop to run gen array creation 
-			numOfMutations[i] = createArrays(); //createArrays returns number of total mutations
+		for(int i=0; i<programRuns; i++){ //for loop to run gen numOfMutations creation 
+			numOfMutations[i] = createnumOfMutationss(); //createnumOfMutationss returns number of total mutations
 		}
 	
-		sort(numOfMutations);
+		sort(numOfMutations); //sort array
+		
 		for(int i=0; i <numOfMutations.length; i++){
 			System.out.print(numOfMutations[i] + " ");
 		}
-		//getFreq(numOfMutations);
+		getFreq(); //find the frequency of the number of mutations that occur
 		
 	}
 	
@@ -34,17 +27,17 @@ public class Mutation_Analysis {
 		for(int i=0; i<arr.length; i++){ //for loop to go see if mutation will occur 
 			int thing = 0; // no mutation
 			if(arr[i]==1) continue; //if there was a previous mutation in slot, continue to next element
-			else if(rand.nextDouble() <= .004){ //see if element falls into probability of mutation
+			else if(rand.nextFloat() <= .004f){ //see if element falls into probability of mutation
 				thing = 1; //mutation occurred 
 			}
 			arr[i] = thing; //set element equal to mutation/ non-mutation
 		}
 	}
 	
-	public static int createArrays(){ //create generation array function: this creates 10 generation plus the initial generation
+	public static int createnumOfMutationss(){ //create generation numOfMutations function: this creates 10 generation plus the initial generation
 		int totalMut = 0;
 		
-		int[] gen0 = new int[(int) Math.pow(2,0)]; //size of array is based on exponential growth by generation number
+		int[] gen0 = new int[(int) Math.pow(2,0)]; //size of numOfMutations is based on exponential growth by generation number
 			mutate(gen0); //function to mutate
 			totalMut = totalMut + totalMutations(gen0);
 		int[] gen1 = new int[(int) Math.pow(2,1)];
@@ -123,7 +116,8 @@ public class Mutation_Analysis {
 	}
 	
 
-	public static void sort(int[] arr){
+	public static void sort(int[] arr){ 
+		//method that will sort the array that holds the number of mutations that occurred during every execution
 		int temp;
 		for(int i=0; i<arr.length; i++){
 			for(int j=1; j<arr.length-i; j++)
@@ -136,24 +130,22 @@ public class Mutation_Analysis {
 		}
 	}
 		
-		public static void getFreq(int[] array){
+		public static void getFreq(){
 			int tempYcounter=0;
-			int[] tempX= new int[array.length];
-			int[] tempY= new int[array.length];
 			
-			for(int i=0; i<array.length-1; i++){
+			for(int i=0; i<numOfMutations.length-1; i++){
 				
-				if(array[i]==array[i+1]){
+				if(numOfMutations[i]==numOfMutations[i+1]){
 					tempX[tempYcounter]+=1;
 				}
 				
-				if(array[i]!=array[i+1])
+				if(numOfMutations[i]!=numOfMutations[i+1])
 				{
-					tempY[tempYcounter++]=array[i];
+					tempY[tempYcounter++]=numOfMutations[i];
 				}
 				
-				if((i+1)==array.length-1){
-					tempY[tempYcounter]=array[i+1];
+				if((i+1)==numOfMutations.length-1){
+					tempY[tempYcounter]=numOfMutations[i+1];
 					break;
 				}
 			}
