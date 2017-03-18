@@ -1,11 +1,18 @@
 import java.util.Random;
+import javax.swing.JFrame;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.xy.DefaultXYDataset;
+import org.jfree.data.xy.XYBarDataset;
 
 public class Mutation_Analysis {
 
 	public static int programRuns = 1000; //how many times to run through the analysis
 	public static int[] numOfMutations = new int[programRuns]; //numOfMutations that will hold # of total mutations
-	public static int[] tempX= new int[numOfMutations.length]; //array that holds frequency of the # of mutations
-	public static int[] tempY= new int[numOfMutations.length]; //array that holds different numbers of mutations that occur every time program is executed
+	public static double[] frequency= new double[numOfMutations.length]; //array that holds frequency of the # of mutations
+	public static double[] mutTotal= new double[numOfMutations.length]; //array that holds different numbers of mutations that occur every time program is executed
 	
 	
 	public static void main(String[] args){
@@ -14,11 +21,8 @@ public class Mutation_Analysis {
 		}
 	
 		sort(numOfMutations); //sort array
-		
-		for(int i=0; i <numOfMutations.length; i++){
-			System.out.print(numOfMutations[i] + " ");
-		}
 		getFreq(); //find the frequency of the number of mutations that occur
+		graph(); //create histogram of data
 		
 	}
 	
@@ -131,31 +135,55 @@ public class Mutation_Analysis {
 	}
 		
 		public static void getFreq(){
-			int tempYcounter=0;
+			//method will use two new arrays, one that will store the total number of mutations
+			//and another that will store how frequent that that many mutations occurred during the 1000 executions
+			int mutTotalcounter=0;
 			
 			for(int i=0; i<numOfMutations.length-1; i++){
 				
 				if(numOfMutations[i]==numOfMutations[i+1]){
-					tempX[tempYcounter]+=1;
+					frequency[mutTotalcounter]+=1; //if number of mutation is repeated in original array, frequency is incremented
 				}
 				
 				if(numOfMutations[i]!=numOfMutations[i+1])
 				{
-					tempY[tempYcounter++]=numOfMutations[i];
+					mutTotal[mutTotalcounter++]=numOfMutations[i]; //if number is not repeated in array, the next element in array
+					//becomes the next number of mutations that occurred
 				}
 				
 				if((i+1)==numOfMutations.length-1){
-					tempY[tempYcounter]=numOfMutations[i+1];
+					//used to get the last element in original array since for loop will go out of bounds
+					mutTotal[mutTotalcounter]=numOfMutations[i+1];
 					break;
 				}
 			}
-			System.out.println();
-			for (int i=0; i<=tempYcounter;i++){
-				tempX[i]+=1;
-				System.out.print(tempY[i]+" : ");
-				System.out.print(tempX[i]);
+			System.out.println("XMut : YFreq");
+			//console display of mutation and frequency values
+			for (int i=0; i<=mutTotal.length-1;i++){
+				if(mutTotal[i]==0 && frequency[i]==0) continue;
+				frequency[i]+=1;
+				System.out.print(mutTotal[i]+" : ");
+				System.out.print(frequency[i]);
 				System.out.println();
 			}
 	}
+		
+		public static void graph(){
+			//method to generate histogram of data
+		      double[][] valuepairs = new double[2][];
+		      valuepairs[0] = mutTotal; //x values
+		      valuepairs[1] = frequency; //y values
+		      DefaultXYDataset set = new DefaultXYDataset();
+		      set.addSeries("Occurances",valuepairs);      
+		      XYBarDataset barset = new XYBarDataset(set, .8);
+		      JFreeChart chart = ChartFactory.createXYBarChart(
+		         "Mutation Analysis","Number of Mutations",false,"Frequency",
+		         barset,PlotOrientation.VERTICAL,true, true, false);
+		      JFrame frame = new JFrame("Mutation Analysis");
+		      frame.setContentPane(new ChartPanel(chart));
+		      frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		      frame.pack();
+		      frame.setVisible(true);
+		   }
 	
 }
